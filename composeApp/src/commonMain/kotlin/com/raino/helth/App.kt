@@ -30,7 +30,10 @@ fun MainScreen() {
     state.error?.let {
         Text(it)
     }
-    Text(state.message)
+    state.message?.let {
+        Text(it)
+    }
+
 }
 @Composable
 @Preview

@@ -3,6 +3,8 @@ package com.raino.helth.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.raino.helth.data.network.ApiService
+import com.raino.helth.data.network.model.ResponseAvidHealth
+import com.raino.helth.utiles.NetworkResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,12 +23,24 @@ class MainViewModel(
     private fun fetchData() {
         viewModelScope.launch {
             try {
-                val response = apiService.getSampleData()
-                _state.value = _state.value.copy(
-                    message = response.message,
-                    isLoading = false,
-                    error = null
-                )
+                when (val response = apiService.getSampleData()) {
+                    is NetworkResult.Error<ResponseAvidHealth> -> {
+                        _state.value = _state.value.copy(
+                            message = null,
+                            isLoading = false,
+                            error = response.error.message
+                        )
+                    }
+
+                    is NetworkResult.Success<ResponseAvidHealth> -> {
+                        _state.value = _state.value.copy(
+                            message = response.data.toString(),
+                            isLoading = false,
+                            error = null
+                        )
+                    }
+                }
+
             } catch (e: Exception) {
                 _state.value = _state.value.copy(
                     isLoading = false,
@@ -42,7 +56,7 @@ class MainViewModel(
 }
 
 data class MainState(
-    val message: String = "Loading...",
+    val message: String? = "Loading...",
     val isLoading: Boolean = true,
     val error: String? = null
 ) 
