@@ -1,8 +1,8 @@
 package com.raino.helth.data.network.model
 
-
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+
 
 @Serializable
 data class ResponseAvidHealth(

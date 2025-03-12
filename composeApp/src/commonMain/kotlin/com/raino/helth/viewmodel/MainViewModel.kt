@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.raino.helth.data.network.ApiService
 import com.raino.helth.data.network.model.ResponseAvidHealth
 import com.raino.helth.utiles.NetworkResult
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,12 +18,14 @@ class MainViewModel(
     val state: StateFlow<MainState> = _state.asStateFlow()
 
     init {
+        Napier.d("MainViewModel initialized")
         fetchData()
     }
 
     private fun fetchData() {
         viewModelScope.launch {
             try {
+                Napier.d("Fetching data from API")
                 when (val response = apiService.getSampleData()) {
                     is NetworkResult.Error<ResponseAvidHealth> -> {
                         _state.value = _state.value.copy(
@@ -40,8 +43,8 @@ class MainViewModel(
                         )
                     }
                 }
-
             } catch (e: Exception) {
+                Napier.e("Error fetching data", e)
                 _state.value = _state.value.copy(
                     isLoading = false,
                     error = e.message
@@ -51,6 +54,7 @@ class MainViewModel(
     }
 
     fun updateMessage(message: String) {
+        Napier.d("Updating message to: $message")
         _state.value = _state.value.copy(message = message)
     }
 }
